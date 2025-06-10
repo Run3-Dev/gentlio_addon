@@ -1,0 +1,8 @@
+## Interface: 100207
+## Title: Gentl.io Score
+## Notes: Zeigt einen benutzerdefinierten Score im Tooltip an
+## Author: gentl.io
+## Version: 0.1
+
+GentlIOData.lua
+GentlIO.lua
