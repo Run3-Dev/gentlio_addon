@@ -4,5 +4,6 @@
 ## Author: gentl.io
 ## Version: 0.1
 
-GentlIOData.lua
 GentlIO.lua
+data/GentlIOData.lua
+data/GentlCommentData.lua
