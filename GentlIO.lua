@@ -114,3 +114,37 @@ SlashCmdList["GENTLIO"] = function()
         print("Gentl.io: Kein Spieler im Ziel.")
     end
 end
+
+-- Beobachte neue Gruppenmitglieder
+local knownPlayers = {}
+
+local function CheckForNewGroupMembers()
+    local numGroupMembers = GetNumGroupMembers()
+    local isRaid = IsInRaid()
+
+    for i = 1, numGroupMembers do
+        local unit = isRaid and "raid" .. i or "party" .. (i == numGroupMembers and "" or i)
+        if UnitExists(unit) and UnitIsPlayer(unit) then
+            local name = UnitName(unit)
+            local realm = select(2, UnitName(unit)) or GetRealmName()
+            realm = realm:gsub("%s+", "")
+            local fullName = name .. "-" .. realm
+
+            if not knownPlayers[fullName] then
+                knownPlayers[fullName] = true
+                if GentlScoreDB and GentlScoreDB[fullName] then
+                    local score = GentlScoreDB[fullName]
+                    print(string.format("Gentl.io: %s hat einen Eintrag (Score: %.2f)", fullName, score))
+                end
+            end
+        end
+    end
+end
+
+local eventFrame = CreateFrame("Frame")
+eventFrame:RegisterEvent("GROUP_ROSTER_UPDATE")
+eventFrame:SetScript("OnEvent", function(_, event)
+    if event == "GROUP_ROSTER_UPDATE" then
+        CheckForNewGroupMembers()
+    end
+end)
