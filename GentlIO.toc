@@ -1,9 +1,12 @@
 ## Interface: 100207
 ## Title: Gentl.io Score
 ## Notes: Zeigt einen benutzerdefinierten Score im Tooltip an
-## Author: gentl.io
-## Version: 0.1
+## Author: gGentl.io
+## Version: 0.2.1
+## SavedVariables: GentlSavedPlayers
 
-GentlIO.lua
-data/GentlIOData.lua
-data/GentlCommentData.lua
+Data/ExternalRatings.lua
+Data/Tags.lua
+Core/PlayerDataStore.lua
+Core/GroupTracker.lua
+UI/MainWindow.lua
