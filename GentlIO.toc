@@ -4,9 +4,11 @@
 ## Author: gGentl.io
 ## Version: 0.2.1
 ## SavedVariables: GentlSavedPlayers
+## OptionalDeps: Blizzard_UnitPopup
 
 Data/ExternalRatings.lua
 Data/Tags.lua
 Core/PlayerDataStore.lua
 Core/GroupTracker.lua
 UI/MainWindow.lua
+UI/ContextMenu.lua

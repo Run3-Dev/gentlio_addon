@@ -2,7 +2,6 @@ local _, Gentl = ...
 local DataStore = Gentl.DataStore
 local ExternalRatings = _G.GentlExternalRatings or {}
 local AvailableTags = _G.GentlAvailableTags or {}
-
 GentlPendingRatings = GentlPendingRatings or {}
 
 local function ensureList(value)
@@ -24,7 +23,9 @@ local function FilterRecent(entries)
         local cutoff = time({year=t.year, month=t.month, day=t.day}) - 2 * 86400
         local ts = time({year=tonumber(player.joinedAt:sub(1,4)), month=tonumber(player.joinedAt:sub(6,7)), day=tonumber(player.joinedAt:sub(9,10))})
         if ts >= cutoff then
-            table.insert(result, player)
+            if not player.name:match("%[%d+%]$") and not player.name:match("^%d+$") then -- Filter für NPCs
+                table.insert(result, player)
+            end
         end
     end
     table.sort(result, SortByRecent)
@@ -88,6 +89,8 @@ ratingForm:SetBackdrop({
     insets = { left = 4, right = 4, top = 4, bottom = 4 }
 })
 ratingForm:SetBackdropColor(0.1, 0.1, 0.1, 0.95)
+ratingForm:SetFrameStrata("DIALOG")
+ratingForm:SetFrameLevel(100)
 ratingForm:Hide()
 
 local formTitle = ratingForm:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
@@ -221,15 +224,28 @@ addRatingButton:SetScript("OnClick", function()
     ratingForm:Show()
 end)
 
-addRatingButton:SetScript("OnClick", function()
-    ratingForm:Show()
-end)
-
 local function UpdateList()
     local players = FilterRecent(DataStore:GetAll())
     for i, button in ipairs(buttons) do button:Hide() end
 
-    for i, player in ipairs(players) do
+    local rowIndex = 1
+
+    -- Eigener Charakter oben
+    local name, realm = UnitName("player")
+    local _, class = UnitClass("player")
+    local race = UnitRace("player")
+    local level = UnitLevel("player")
+
+    local selfPlayer = {
+        name = name,
+        realm = realm,
+        class = class,
+        race = race,
+        level = level,
+        joinedAt = date("%Y-%m-%d %H:%M:%S")
+    }
+
+    local function createOrUpdateButton(i, player, isSelf)
         local btn = buttons[i]
         if not btn then
             btn = CreateFrame("Button", nil, content, "BackdropTemplate")
@@ -260,8 +276,9 @@ local function UpdateList()
         end
 
         local label = player.name .. "-" .. (player.realm or GetRealmName())
-        btn.text:SetText(label)
+        btn.text:SetText(isSelf and ("|cff00ff00" .. label .. "|r") or label)
 
+        -- Icons
         local classUpper = string.upper(player.class or "")
         btn.classIcon:SetTexture("Interface\\GLUES\\CHARACTERCREATE\\UI-CharacterCreate-Classes")
         local classIcons = {
@@ -290,7 +307,7 @@ local function UpdateList()
         btn.factionIcon:SetTexture(factionTexture)
 
         btn:Show()
-        btn:SetBackdropColor(0.2, 0.2, 0.2, 1)
+        btn:SetBackdropColor(isSelf and 0.3 or 0.2, isSelf and 0.3 or 0.2, isSelf and 0.3 or 0.2, 1)
 
         btn:SetScript("OnClick", function()
             selectedPlayer = player
@@ -303,6 +320,16 @@ local function UpdateList()
             btn:SetBackdropColor(0.6, 0.6, 0.6, 1)
         end)
     end
+
+    -- Erst du selbst
+    createOrUpdateButton(rowIndex, selfPlayer, true)
+    rowIndex = rowIndex + 1
+
+    -- Dann alle anderen
+    for _, player in ipairs(players) do
+        createOrUpdateButton(rowIndex, player, false)
+        rowIndex = rowIndex + 1
+    end
 end
 
 frame:SetScript("OnShow", function()
@@ -314,3 +341,7 @@ closeButton:SetPoint("TOPRIGHT", frame, "TOPRIGHT", -4, -4)
 closeButton:SetScript("OnClick", function()
     frame:Hide()
 end)
+
+-- 🧠 Fix für nil-Fehler:
+Gentl.UI = Gentl.UI or {}
+Gentl.UI.MainWindow = frame

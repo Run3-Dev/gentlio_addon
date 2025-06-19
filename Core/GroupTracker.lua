@@ -12,7 +12,8 @@ local function UpdateGroupMembers()
     local members = GetNumGroupMembers()
     for i = 1, members do
         local unit = IsInRaid() and ("raid" .. i) or ("party" .. i)
-        if UnitExists(unit) then
+
+        if UnitExists(unit) and UnitIsPlayer(unit) then
             local name, realm = UnitName(unit)
             local _, class = UnitClass(unit)
             local race = UnitRace(unit)

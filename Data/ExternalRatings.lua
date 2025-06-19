@@ -103,5 +103,12 @@ GentlExternalRatings = {
             tags = { "toxisch", "mechanisch stark" },
             timestamp = "2025-06-13 22:55:11"
         }
-    }
+    },
+    ["Janeavera-Antonidas"] = {
+        {
+            score = 4.5,
+            tags = { "freundlich", "positiv eingestellt" },
+            timestamp = "2025-06-11 22:20:39"
+        }
+    },
 }
