@@ -3,7 +3,7 @@
 ## Notes: Zeigt einen benutzerdefinierten Score im Tooltip an
 ## Author: gGentl.io
 ## Version: 0.2.1
-## SavedVariables: GentlSavedPlayers
+## SavedVariables: GentlSavedPlayers, GentlPendingRatings
 ## OptionalDeps: Blizzard_UnitPopup
 
 Data/ExternalRatings.lua

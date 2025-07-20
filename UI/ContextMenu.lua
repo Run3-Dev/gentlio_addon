@@ -1,4 +1,4 @@
--- TooltipOverlay.lua – Retail-kompatibel mit sicherem Hook über Frame Event
+-- ContextMenu.lua – Erweiterung des Tooltips um Gentl.IO-Bewertungen
 
 local _, Gentl = ...
 local ExternalRatings = _G.GentlExternalRatings or {}
@@ -45,28 +45,27 @@ local function GetRatingSummary(fullName)
     return labels[rounded] or "Unbewertet", #ratings
 end
 
--- Sicherstellen, dass der Hook erst nach vollständigem UI-Setup erfolgt
-local frame = CreateFrame("Frame")
-frame:RegisterEvent("PLAYER_ENTERING_WORLD")
-frame:SetScript("OnEvent", function()
-    if GameTooltip:HasScript("OnTooltipSetUnit") then
-        GameTooltip:HookScript("OnTooltipSetUnit", function(self)
-            local name, unit = self:GetUnit()
-            if not unit or not UnitIsPlayer(unit) then return end
+-- Tooltip erweitern mit Bewertung
+TooltipDataProcessor.AddTooltipPostCall(Enum.TooltipDataType.Unit, function(tooltip, data)
+    local name, unit = tooltip:GetUnit()
+    if not unit or not UnitIsPlayer(unit) then return end
 
-            local rawName, realm = UnitName(unit)
-            if not rawName then return end
-            realm = realm or GetRealmName()
-            local fullName = rawName .. "-" .. realm
+    local rawName, realm = UnitName(unit)
+    if not rawName then return end
+    realm = realm or GetRealmName()
+    local fullName = rawName .. "-" .. realm
 
-            local summary, count = GetRatingSummary(fullName)
-            if not summary then return end
+    local summary, count = GetRatingSummary(fullName)
 
-            self:AddLine(" ")
-            self:AddLine("|cffffff00Gentl.IO|r")
-            self:AddLine(string.format("Bewertung: |cffffffff%s|r", summary))
-            self:AddLine(string.format("%d Bewertungen", count))
-            self:Show()
-        end)
+    tooltip:AddLine(" ")
+    tooltip:AddLine("|cffffff00Gentl.IO|r")
+
+    if summary then
+        tooltip:AddDoubleLine("Bewertung:", string.format("|cffffffff%s|r", summary))
+        tooltip:AddLine(string.format("%d Bewertungen", count))
+    else
+        tooltip:AddLine("|cffffaaaaKeine Bewertungen vorhanden|r")
     end
+    
+    tooltip:AddLine(" ")
 end)
