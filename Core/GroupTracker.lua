@@ -1,6 +1,18 @@
 local _, Gentl = ...
 local DataStore
 
+local I18N = GentlI18N or { T = function(k) return k end }
+
+local defaultLocale = "enUS"
+local currentLocale = GetLocale() or defaultLocale
+
+local locales = {
+  ["enUS"] = "Locales/enUS.lua",
+  ["deDE"] = "Locales/deDE.lua",
+}
+
+local L = {}
+
 local f = CreateFrame("Frame")
 f:RegisterEvent("ADDON_LOADED")
 f:RegisterEvent("GROUP_ROSTER_UPDATE")
@@ -22,7 +34,7 @@ local function UpdateGroupMembers()
                 local isNew = DataStore:SavePlayer(name, realm, class, race, level)
                 if isNew then
                     local fullName = name .. "-" .. (realm or GetRealmName())
-                    print("|cff00ccff[Gentl.io]|r Neuer Gruppenmitglied gespeichert:", fullName, "(Klasse:", class, "Level:", level .. ")")
+                    print("|cff00ccff[Gentl.io]|r " .. GentlI18N.T("New Groupmember") .. ":", fullName, "(" .. GentlI18N.T("Class") .. ":", class, GentlI18N.T("Level") .. ":", level .. ")")
                 end
             end
         end
@@ -34,7 +46,7 @@ f:SetScript("OnEvent", function(_, event, arg1)
         DataStore = Gentl.DataStore
         DataStore:Init()
         initialized = true
-        print("|cff00ccff[Gentl.io]|r Addon geladen")
+        print("|cff00ccff[Gentl.io]|r " .. GentlI18N.T("Addon Loaded"))
     elseif event == "GROUP_ROSTER_UPDATE" then
         UpdateGroupMembers()
     end

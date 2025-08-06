@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.2.8] – 2025-08-06
+### Added
+- Internationalization (I18N) support with language auto-detection via `GetLocale()`.
+- English (`enUS`) and German (`deDE`) translations included.
+- All user-facing strings now routed through a central translation function (`GentlI18N.T`).
+- English is used as fallback if no translation is found.
+
 ## [0.2.5] – 2025-07-20
 ### Added
 - Persistent storage of local player ratings in SavedVariables (`GentlPendingRatings`).

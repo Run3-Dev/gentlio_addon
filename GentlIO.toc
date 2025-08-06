@@ -2,13 +2,23 @@
 ## Title: Gentl.io Score
 ## Notes: Zeigt einen benutzerdefinierten Score im Tooltip an
 ## Author: gGentl.io
-## Version: 0.2.1
+## Version: 0.2.8
 ## SavedVariables: GentlSavedPlayers, GentlPendingRatings
 ## OptionalDeps: Blizzard_UnitPopup
 
+# Data
 Data/ExternalRatings.lua
 Data/Tags.lua
+
+# Locales (muss VOR I18N.lua kommen!)
+Locales/enUS.lua
+Locales/deDE.lua
+
+# Core
+Core/I18N.lua
 Core/PlayerDataStore.lua
 Core/GroupTracker.lua
+
+# UI
 UI/MainWindow.lua
 UI/ContextMenu.lua

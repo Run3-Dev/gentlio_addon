@@ -4,6 +4,16 @@ local _, Gentl = ...
 local ExternalRatings = _G.GentlExternalRatings or {}
 local PendingRatings = _G.GentlPendingRatings or {}
 
+local I18N = GentlI18N or { T = function(k) return k end }
+
+local defaultLocale = "enUS"
+local currentLocale = GetLocale() or defaultLocale
+
+local locales = {
+  ["enUS"] = "Locales/enUS.lua",
+  ["deDE"] = "Locales/deDE.lua",
+}
+
 local function ensureList(value)
     if type(value) == "table" then
         return value
@@ -33,16 +43,17 @@ local function GetRatingSummary(fullName)
     local avg = total / #ratings
 
     local rounded = math.floor(avg + 0.5)
+
     local labels = {
-        [0] = "Negatives Erlebnis",
-        [1] = "Unzufrieden",
-        [2] = "Durchschnittlich",
-        [3] = "Zufrieden",
-        [4] = "Sehr gut",
-        [5] = "Herausragend"
+        [0] = GentlI18N.T("Negative experience"),
+        [1] = GentlI18N.T("Unpleasant experience"),
+        [2] = GentlI18N.T("Regular experience"),
+        [3] = GentlI18N.T("Positive experience"),
+        [4] = GentlI18N.T("Very positive experience"),
+        [5] = GentlI18N.T("One of a kind")
     }
 
-    return labels[rounded] or "Unbewertet", #ratings
+    return labels[rounded] or GentlI18N.T("No Ratings"), #ratings
 end
 
 -- Tooltip erweitern mit Bewertung
@@ -61,10 +72,10 @@ TooltipDataProcessor.AddTooltipPostCall(Enum.TooltipDataType.Unit, function(tool
     tooltip:AddLine("|cffffff00Gentl.IO|r")
 
     if summary then
-        tooltip:AddDoubleLine("Bewertung:", string.format("|cffffffff%s|r", summary))
-        tooltip:AddLine(string.format("%d Bewertungen", count))
+        tooltip:AddDoubleLine(GentlI18N.T("Rating") .. ":", string.format("|cffffffff%s|r", summary))
+        tooltip:AddLine(string.format("%d " .. GentlI18N.T("Ratings"), count))
     else
-        tooltip:AddLine("|cffffaaaaKeine Bewertungen vorhanden|r")
+        tooltip:AddLine("|cffffaaaa" .. GentlI18N.T("No Ratings") .. "|r")
     end
     
     tooltip:AddLine(" ")

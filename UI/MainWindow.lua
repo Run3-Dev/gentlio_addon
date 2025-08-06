@@ -4,6 +4,16 @@ local ExternalRatings = _G.GentlExternalRatings or {}
 local AvailableTags = _G.GentlAvailableTags or {}
 GentlPendingRatings = GentlPendingRatings or {}
 
+local I18N = GentlI18N or { T = function(k) return k end }
+
+local defaultLocale = "enUS"
+local currentLocale = GetLocale() or defaultLocale
+
+local locales = {
+  ["enUS"] = "Locales/enUS.lua",
+  ["deDE"] = "Locales/deDE.lua",
+}
+
 local function ensureList(value)
     if type(value) == "table" and (#value > 0 or next(value) == nil) then
         return value
@@ -55,7 +65,7 @@ scrollFrame:SetSize(250, 460)
 
 local title = frame:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
 title:SetPoint("BOTTOMLEFT", scrollFrame, "TOPLEFT", 0, 6)
-title:SetText("Letzte Gruppenmitglieder")
+title:SetText(GentlI18N.T("Last Groupmembers"))
 title:SetTextColor(1, 1, 1)
 
 local content = CreateFrame("Frame", nil, scrollFrame)
@@ -71,12 +81,12 @@ detail:SetPoint("TOPLEFT", scrollFrame, "TOPRIGHT", 35, -10)
 detail:SetJustifyH("LEFT")
 detail:SetWidth(300)
 detail:SetTextColor(1, 1, 1)
-detail:SetText("Wähle einen Spieler...")
+detail:SetText(GentlI18N.T("Choose a Groupmember") .. "...")
 
 local addRatingButton = CreateFrame("Button", nil, frame, "UIPanelButtonTemplate")
 addRatingButton:SetSize(160, 24)
 addRatingButton:SetPoint("BOTTOMRIGHT", frame, -20, 15)
-addRatingButton:SetText("Bewertung hinzufügen")
+addRatingButton:SetText(GentlI18N.T("Add Rating"))
 addRatingButton:Hide()
 
 local ratingForm = CreateFrame("Frame", nil, frame, "BackdropTemplate")
@@ -95,7 +105,7 @@ ratingForm:Hide()
 
 local formTitle = ratingForm:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
 formTitle:SetPoint("TOP", ratingForm, "TOP", 0, -10)
-formTitle:SetText("Neue Bewertung")
+formTitle:SetText(GentlI18N.T("New Rating"))
 
 local tagCheckboxes = {}
 
@@ -122,12 +132,12 @@ createTagSection(AvailableTags.negative or {}, "Negative Tags", 200, -40)
 local saveButton = CreateFrame("Button", nil, ratingForm, "UIPanelButtonTemplate")
 saveButton:SetSize(100, 22)
 saveButton:SetPoint("BOTTOMRIGHT", ratingForm, -20, 10)
-saveButton:SetText("Speichern")
+saveButton:SetText(GentlI18N.T("Save"))
 
 local cancelButton = CreateFrame("Button", nil, ratingForm, "UIPanelButtonTemplate")
 cancelButton:SetSize(100, 22)
 cancelButton:SetPoint("BOTTOMLEFT", ratingForm, 20, 10)
-cancelButton:SetText("Abbrechen")
+cancelButton:SetText(GentlI18N.T("Abort"))
 
 cancelButton:SetScript("OnClick", function()
     ratingForm:Hide()
@@ -150,7 +160,7 @@ saveButton:SetScript("OnClick", function()
     end
 
     if count == 0 then
-        print("|cffff4444[Gentl.io]|r Du musst mindestens ein Tag auswählen.")
+        print("|cffff4444[Gentl.io]|r " .. GentlI18N.T("Choose at least one tag"))
         return
     end
 
@@ -162,7 +172,7 @@ saveButton:SetScript("OnClick", function()
         timestamp = date("%Y-%m-%d %H:%M:%S")
     })
 
-    print("|cff00ccff[Gentl.io]|r Bewertung gespeichert für:", fullName)
+    print("|cff00ccff[Gentl.io]|r " .. GentlI18N.T("Rating saved for") .. ":", fullName)
     for _, cb in ipairs(tagCheckboxes) do
         cb:SetChecked(false)
     end
@@ -175,11 +185,11 @@ local function UpdateDetails(player)
     local fullName = player.name .. "-" .. realm
 
     local lines = {}
-    table.insert(lines, string.format("Name: %s", player.name))
-    table.insert(lines, string.format("Realm: %s", realm))
-    table.insert(lines, string.format("Klasse: %s", player.class or "?"))
-    table.insert(lines, string.format("Level: %s", player.level or "?"))
-    table.insert(lines, string.format("Zuletzt gesehen: %s", player.joinedAt or "?"))
+    table.insert(lines, string.format(GentlI18N.T("Name") .. ": %s", player.name))
+    table.insert(lines, string.format(GentlI18N.T("Realm") .. ": %s", realm))
+    table.insert(lines, string.format(GentlI18N.T("Class") .. ": %s", player.class or "?"))
+    table.insert(lines, string.format(GentlI18N.T("Level") .. ": %s", player.level or "?"))
+    table.insert(lines, string.format(GentlI18N.T("Last time seen") .. ": %s", player.joinedAt or "?"))
 
     local ratingsExternal = ensureList(ExternalRatings[fullName])
     local ratingsLocal = ensureList(GentlPendingRatings[fullName])
@@ -194,21 +204,21 @@ local function UpdateDetails(player)
 
     if #allRatings > 0 then
         table.insert(lines, "")
-        table.insert(lines, "Bewertungen:")
+        table.insert(lines, GentlI18N.T("Ratings") .. ":")
 
         local labels = {
-            [0] = { text = "Negatives Erlebnis", color = "|cff9d9d9d" },
-            [1] = { text = "Unzufrieden", color = "|cffffffff" },
-            [2] = { text = "Durchschnittlich", color = "|cff1eff00" },
-            [3] = { text = "Zufrieden", color = "|cff0070dd" },
-            [4] = { text = "Sehr gut", color = "|cffa335ee" },
-            [5] = { text = "Herausragend", color = "|cffff8000" }
+            [0] = { text = GentlI18N.T("Negative experience"), color = "|cff9d9d9d" },
+            [1] = { text = GentlI18N.T("Unpleasant experience"), color = "|cffffffff" },
+            [2] = { text = GentlI18N.T("Regular experience"), color = "|cff1eff00" },
+            [3] = { text = GentlI18N.T("Positive experience"), color = "|cff0070dd" },
+            [4] = { text = GentlI18N.T("Very positive experience"), color = "|cffa335ee" },
+            [5] = { text = GentlI18N.T("One of a kind"), color = "|cffff8000" }
         }
 
         for _, entry in ipairs(allRatings) do
             local score = math.floor(entry.score + 0.5)
-            local label = labels[score] or { text = "Unbewertet", color = "|cffffffff" }
-            table.insert(lines, string.format("  %s%s|r  (%s)", label.color, label.text, entry.timestamp or "unbekannt"))
+            local label = labels[score] or { text = GentlI18N.T("No Ratings"), color = "|cffffffff" }
+            table.insert(lines, string.format("  %s%s|r  (%s)", label.color, label.text, entry.timestamp or GentlI18N.T("Unknown")))
             if entry.tags then
                 table.insert(lines, "    " .. table.concat(entry.tags, ", "))
             end
